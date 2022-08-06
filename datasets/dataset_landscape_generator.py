@@ -4,7 +4,7 @@ from PIL import Image
 from tqdm import tqdm
 from pathlib import Path
 from argparse import ArgumentParser
-
+import time
 
 def calc_label(label: np.ndarray, threshold: float):
     """
@@ -23,9 +23,14 @@ def calc_label(label: np.ndarray, threshold: float):
         "water": [2, 3, 8, 16, 20],
     }
 
+    mount_count = np.sum(np.isin(label,label2id["mountain"])) > int(threshold * label.size)
+    sky_count = np.sum(np.isin(label,label2id["sky"])) > int(threshold * label.size)
+    water_count = np.sum(np.isin(label,label2id["water"])) > int(threshold * label.size)
+    ans = {"mountain": mount_count, "sky": sky_count, "water": water_count}
+
     # TODO Start: Finish this function #
-    raise NotImplementedError
-    return {"mountain": True, "sky": True, "water": True}
+    # raise NotImplementedError
+    return ans
     # TODO End #
 
 
@@ -37,13 +42,15 @@ def process_data(mode: str, threshold: float):
     :return: None. Write a file to the corresponding path.
     """
     working_dir = (Path(__file__) / ".." / ".." / "data" / mode).resolve()
+    
+    pass
 
     # TODO Start: Append directory in pathlib.Path, so that they point to `./data/{mode}/imgs`
     #  and `./data/{mode}/labels` #
-    image_dir = None
-    label_dir = None
+    image_dir = (Path(__file__) / ".." / ".." / "data" / mode /"imgs").resolve()
+    label_dir = (Path(__file__) / ".." / ".." / "data" / mode /"labels").resolve()
     # TODO End #
-
+    
     print(f"[Data] Now in {working_dir}...")
 
     out_str = "img_path,mountain,sky,water\n"
@@ -54,8 +61,10 @@ def process_data(mode: str, threshold: float):
 
     # TODO Start: Construct a list of filenames without suffix from image_dir, like ['48432_b67ec6cd63_b',
     #  '70190_90b25efb3b_b', ...] #
-    filename_list = [None, None, ...]
+    filename_list_with_jpg = os.listdir(image_dir)
+    filename_list = [a[:-4] for a in filename_list_with_jpg]
     # TODO End #
+    
 
     for idx, file_name in tqdm(enumerate(filename_list), total=len(filename_list)):
         label_path = str(label_dir / f"{file_name}.png")
@@ -68,13 +77,18 @@ def process_data(mode: str, threshold: float):
         # if idx == 1000:
         #     break
 
+    
     # After all file has been processed, write `out_str` to `{working_dir}/file.txt`
     # TODO Start: Write out_str to `{working_dir}/file.txt` in overwritten mode #
-    raise NotImplementedError
+    # raise NotImplementedError
+    out_put_file = (working_dir / "file.txt").resolve()
+    f = open(out_put_file,'w')
+    f.write(out_str)
     # TODO End #
 
 
 if __name__ == "__main__":
+    begin = time.time()
     parser = ArgumentParser()
     parser.add_argument("--threshold", type=float, default=0.2, help="Threshold for determining if a label exists in "
                                                                    "the image.")
@@ -82,3 +96,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     process_data(args.mode, args.threshold)
+    print(time.time() - begin)

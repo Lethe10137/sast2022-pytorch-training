@@ -23,6 +23,7 @@ def draw_loss_curve(args, loss_list):
     os.makedirs(f"{args.save_path}/{args.task_name}", exist_ok=True)
     plt.cla()
     # TODO Start: Plot curve using values in loss_list #
-    plt.plot([], [])
+    length_of_loss_list = len(loss_list)
+    plt.plot(range(0,length_of_loss_list), loss_list)
     # TODO End #
     plt.savefig(f"{args.save_path}/{args.task_name}/loss.png")

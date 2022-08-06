@@ -4,7 +4,7 @@ from PIL import Image
 from torch.utils.data import Dataset
 
 # TODO Start: Inherit from torch.utils.data.Dataset #
-class LandScapeDataset(object):
+class LandScapeDataset(Dataset):
 # TODO End #
     def __init__(self, mode="train"):
         self.mode = mode
@@ -20,8 +20,9 @@ class LandScapeDataset(object):
 
     def __len__(self):
         # TODO Start: Return length of current dataset #
-        return 0
+        return len(self.images)
         # TODO End #
+
 
     def __getitem__(self, idx):
         """
@@ -33,12 +34,13 @@ class LandScapeDataset(object):
 
         # TODO Start: Use Image from PIL to load image, then resize it to (w/4, h/4) #
         image = Image.open(f"./data/{self.mode}/imgs/{file_name}")
-        image = image.resize((0, 0))  # Resize to (w/4, h/4)
+        size = image.size
+        image = image.resize((size[0]//4, size[1]//4))  # Resize to (w/4, h/4)
         # TODO End #
 
         array = np.array(image)
         # TODO Start: What is this line doing? #
-        # array = array.transpose((2, 0, 1))  # From (192, 256, 3) to (3, 192, 256)
+        array = array.transpose((2, 0, 1))  # From (192, 256, 3) to (3, 192, 256)
         # TODO End #
 
         ret_dict = {
